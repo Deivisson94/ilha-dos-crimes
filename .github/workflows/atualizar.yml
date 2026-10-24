@@ -2,7 +2,7 @@ name: Atualizar Ilha dos Crimes
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # Roda automaticamente a cada 30 minutos
+    - cron: '*/10 * * * *'  # Roda automaticamente a cada 10 minutos
   workflow_dispatch:      # Permite o botão manual e via API do site
 
 jobs:
