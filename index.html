@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ILHA DOS CRIMES - Dashboard LoL BR</title>
+  
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(180deg, #0b132b 0%, #0d1b3e 50%, #050814 100%);
+      background-attachment: fixed;
+      color: #94a3b8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: 
+        radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 90px 40px, #38bdf8, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.9), rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 230px 190px, #818cf8, rgba(0,0,0,0));
+      background-repeat: repeat;
+      background-size: 400px 400px;
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .font-orbitron { font-family: 'Orbitron', sans-serif; }
+
+    header {
+      background: rgba(18, 29, 58, 0.95);
+      border-bottom: 1px solid #1e293b;
+      backdrop-filter: blur(10px);
+      position: sticky; top: 0; z-index: 40; padding: 12px 16px;
+    }
+
+    .header-container {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+
+    .logo-img { height: 48px; width: auto; max-width: 200px; object-fit: contain; display: block; }
+
+    .btn-sync {
+      padding: 8px 14px;
+      background: linear-gradient(90deg, #38bdf8 0%, #6366f1 100%);
+      color: #050814; font-weight: 800; border-radius: 10px; border: none;
+      cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 11px;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); transition: all 0.2s; white-space: nowrap;
+    }
+
+    .btn-sync:hover { opacity: 0.9; color: #fff; }
+
+    main { max-width: 1280px; margin: 0 auto; padding: 16px; width: 100%; z-index: 10; flex: 1; }
+
+    .banner-card {
+      background: rgba(15, 23, 42, 0.9); border: 1px solid #1e293b;
+      border-radius: 14px; padding: 16px; display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 20px; box-shadow: 0 0 25px rgba(56, 189, 248, 0.1);
+      gap: 12px;
+    }
+
+    .table-container {
+      background: rgba(15, 23, 42, 0.9); border: 1px solid #1e293b;
+      border-radius: 14px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    }
+
+    table { width: 100%; border-collapse: collapse; text-align: left; min-width: 720px; }
+    th { background: rgba(18, 29, 58, 0.9); padding: 12px 14px; font-size: 10px; color: #94a3b8; text-transform: uppercase; border-bottom: 1px solid #1e293b; white-space: nowrap; }
+    td { padding: 14px; border-bottom: 1px solid rgba(30, 41, 59, 0.6); vertical-align: middle; }
+
+    .btn-profile { padding: 6px 12px; background: #0b132b; border: 1px solid #1e293b; color: #fff; font-size: 10px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px; text-decoration: none; }
+    .btn-profile:hover { border-color: #38bdf8; color: #38bdf8; }
+
+    footer { border-top: 1px solid #1e293b; background: rgba(18, 29, 58, 0.4); padding: 14px; text-align: center; font-size: 11px; color: #94a3b8; }
+
+    @media (max-width: 640px) {
+      header { padding: 10px; }
+      .header-container { flex-direction: column; text-align: center; gap: 8px; }
+      .logo-img { height: 40px; }
+      main { padding: 10px; }
+      .banner-card { flex-direction: column; text-align: center; padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center;">
+        <img src="logo.png" onerror="this.onerror=null; this.src='logo.jpg';" class="logo-img">
+        <div>
+          <h1 style="color: #fff; font-size: 16px; font-weight: 900;" class="font-orbitron">ILHA DOS <span style="color: #38bdf8;">CRIMES</span></h1>
+          <p style="font-size: 10px; color: #94a3b8;">Dashboard LoL BR (Estável)</p>
+        </div>
+      </div>
+      <button onclick="location.reload()" class="btn-sync font-orbitron">
+        <i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i>
+        <span>SINCRONIZAR</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div class="banner-card">
+      <div>
+        <h2 class="font-orbitron" style="color: #fff; font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 6px; justify-content: center;">
+          <i data-lucide="shield" style="color: #38bdf8; width: 16px;"></i> PAINEL DE MONITORAMENTO DE ELOS
+        </h2>
+        <p style="font-size: 11px; color: #94a3b8; margin-top: 2px;">Acompanhamento oficial das contas da Ilha dos Crimes.</p>
+      </div>
+      <div style="text-align: center;">
+        <span style="font-size: 9px; font-weight: 700;" class="font-orbitron">Invocadores</span>
+        <span style="font-size: 18px; font-weight: 900; color: #38bdf8; display: block;" class="font-orbitron" id="monitoredCount">0</span>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr class="font-orbitron">
+            <th>Invocador</th>
+            <th>Ranked Solo / Duo</th>
+            <th>Ranked Flex</th>
+            <th style="text-align: center;">Ação OP.GG</th>
+          </tr>
+        </thead>
+        <tbody id="summonersTableBody"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <p>ILHA DOS CRIMES © 2026 • Painel Integrado Riot Games API</p>
+  </footer>
+
+  <script>
+    const summoners = [
+  {
+    "id": "1",
+    "gameName": "IDC BABY",
+    "tagLine": "BABY",
+    "level": 814,
+    "ddragonVer": "16.21.1",
+    "iconUrl": "https://ddragon.leagueoflegends.com/cdn/16.21.1/img/profileicon/2076.png",
+    "solo": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "flex": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "score": 0
+  },
+  {
+    "id": "2",
+    "gameName": "sailor mars",
+    "tagLine": "408",
+    "level": 476,
+    "ddragonVer": "16.21.1",
+    "iconUrl": "https://ddragon.leagueoflegends.com/cdn/16.21.1/img/profileicon/5424.png",
+    "solo": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "flex": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "score": 0
+  },
+  {
+    "id": "3",
+    "gameName": "IDC Malvadeza",
+    "tagLine": "BR1",
+    "level": 400,
+    "ddragonVer": "16.21.1",
+    "iconUrl": "https://ddragon.leagueoflegends.com/cdn/16.21.1/img/profileicon/6923.png",
+    "solo": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "flex": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "score": 0
+  },
+  {
+    "id": "4",
+    "gameName": "IDC PaiPelado",
+    "tagLine": "BR1",
+    "level": 811,
+    "ddragonVer": "16.21.1",
+    "iconUrl": "https://ddragon.leagueoflegends.com/cdn/16.21.1/img/profileicon/6231.png",
+    "solo": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "flex": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "score": 0
+  },
+  {
+    "id": "5",
+    "gameName": "IDC yOKA",
+    "tagLine": "pnl",
+    "level": 438,
+    "ddragonVer": "16.21.1",
+    "iconUrl": "https://ddragon.leagueoflegends.com/cdn/16.21.1/img/profileicon/1213.png",
+    "solo": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "flex": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "score": 0
+  },
+  {
+    "id": "6",
+    "gameName": "IDC Ruan",
+    "tagLine": "br1",
+    "level": 529,
+    "ddragonVer": "16.21.1",
+    "iconUrl": "https://ddragon.leagueoflegends.com/cdn/16.21.1/img/profileicon/5269.png",
+    "solo": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "flex": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "score": 0
+  },
+  {
+    "id": "7",
+    "gameName": "ADogC",
+    "tagLine": "br1",
+    "level": 226,
+    "ddragonVer": "16.21.1",
+    "iconUrl": "https://ddragon.leagueoflegends.com/cdn/16.21.1/img/profileicon/7142.png",
+    "solo": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "flex": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "score": 0
+  },
+  {
+    "id": "8",
+    "gameName": "DLS ADogC",
+    "tagLine": "DLS",
+    "level": 49,
+    "ddragonVer": "16.21.1",
+    "iconUrl": "https://ddragon.leagueoflegends.com/cdn/16.21.1/img/profileicon/7063.png",
+    "solo": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "flex": {
+      "tier": "UNRANKED",
+      "division": "",
+      "lp": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "score": 0
+  }
+];
+    const fallbackIcon = 'https://ddragon.leagueoflegends.com/cdn/14.20.1/img/profileicon/29.png';
+
+    const tierNamesPT = {
+      IRON: 'Ferro', BRONZE: 'Bronze', SILVER: 'Prata', GOLD: 'Ouro',
+      PLATINUM: 'Platina', EMERALD: 'Esmeralda', DIAMOND: 'Diamante',
+      MASTER: 'Mestre', GRANDMASTER: 'Grão-Mestre', CHALLENGER: 'Desafiante', UNRANKED: 'Unranked'
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderTable();
+      if(window.lucide) lucide.createIcons();
+    });
+
+    function renderTable() {
+      const tbody = document.getElementById('summonersTableBody');
+      document.getElementById('monitoredCount').textContent = summoners.length;
+
+      if (summoners.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 24px;">Nenhum dado carregado. Execute a atualização.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = summoners.map(s => {
+        const soloTotal = s.solo.wins + s.solo.losses;
+        const soloWr = soloTotal > 0 ? Math.round((s.solo.wins / soloTotal) * 100) : 0;
+        const flexTotal = s.flex.wins + s.flex.losses;
+        const flexWr = flexTotal > 0 ? Math.round((s.flex.wins / flexTotal) * 100) : 0;
+        const opggUrl = `https://www.op.gg/summoners/br/${encodeURIComponent(s.gameName)}-${encodeURIComponent(s.tagLine)}`;
+
+        return `
+          <tr>
+            <td>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="${s.iconUrl}" onerror="this.src='${fallbackIcon}';" style="width: 38px; height: 38px; border-radius: 10px; border: 1px solid #1e293b;">
+                <div>
+                  <div style="color: #fff; font-weight: 700; font-size: 13px;">${s.gameName} <span style="color: #38bdf8; font-size: 10px;">#${s.tagLine}</span></div>
+                  <div style="font-size: 10px; color: #94a3b8;">Nível ${s.level}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div>
+                <span style="padding: 2px 5px; border-radius: 4px; font-size: 9px; font-weight: 900; background: rgba(56, 189, 248, 0.15); color: #38bdf8;" class="font-orbitron">${s.solo.tier}</span>
+                <div style="font-size: 11px; font-weight: 800; color: #fff; margin-top: 2px;">${tierNamesPT[s.solo.tier] || s.solo.tier} ${s.solo.division} (${s.solo.lp} PDL)</div>
+                <div style="font-size: 10px; color: #94a3b8;">${s.solo.wins}V ${s.solo.losses}D <span style="color: #10b981; font-weight: 700;">${soloWr}%</span></div>
+              </div>
+            </td>
+            <td>
+              <div>
+                <span style="padding: 2px 5px; border-radius: 4px; font-size: 9px; font-weight: 900; background: rgba(56, 189, 248, 0.15); color: #38bdf8;" class="font-orbitron">${s.flex.tier}</span>
+                <div style="font-size: 11px; font-weight: 800; color: #fff; margin-top: 2px;">${tierNamesPT[s.flex.tier] || s.flex.tier} ${s.flex.division} (${s.flex.lp} PDL)</div>
+                <div style="font-size: 10px; color: #94a3b8;">${s.flex.wins}V ${s.flex.losses}D <span style="color: #10b981; font-weight: 700;">${flexWr}%</span></div>
+              </div>
+            </td>
+            <td style="text-align: center;">
+              <a href="${opggUrl}" target="_blank" class="btn-profile font-orbitron">
+                <i data-lucide="external-link" style="width: 12px; height: 12px;"></i> PERFIL OP.GG
+              </a>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+python atualizar.py
+pause
