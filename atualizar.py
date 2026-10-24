@@ -3,10 +3,8 @@ import time
 import json
 import urllib.parse
 import requests
-import re  # <--- É SÓ ADICIONAR ESTA LINHA AQUI NO TOPO!
+import re
 from datetime import datetime
-
-import os
 
 # Pega a chave do ambiente (GitHub Actions) ou usa a chave local
 API_KEY = os.getenv(
@@ -65,7 +63,7 @@ except Exception:
   champ_id_to_name = {}
 
 print("==================================================")
-print("🧠 ILHA DOS CRIMES - EXTRAÇÃO COM FILTROS ATIVOS E DDRAGON DINÂMICO")
+print("🧠 ILHA DOS CRIMES - EXTRAÇÃO OTIMIZADA (SEM RATE LIMIT)")
 print("==================================================\n")
 
 for s in summoners:
@@ -104,14 +102,14 @@ for s in summoners:
   try:
     acc_url = f"https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{encoded_name}/{encoded_tag}"
     res_acc = requests.get(acc_url, headers=headers, timeout=10)
-    time.sleep(0.8)
+    time.sleep(1.0)
 
     if res_acc.status_code == 200:
       puuid = res_acc.json().get("puuid")
 
       sum_url = f"https://br1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}"
       res_sum = requests.get(sum_url, headers=headers, timeout=10)
-      time.sleep(0.8)
+      time.sleep(1.0)
 
       if res_sum.status_code == 200:
         sum_data = res_sum.json()
@@ -122,12 +120,12 @@ for s in summoners:
         # 1. RANKED
         league_url = f"https://br1.api.riotgames.com/lol/league/v4/entries/by-summoner/{summoner_id}"
         res_league = requests.get(league_url, headers=headers, timeout=10)
-        time.sleep(0.8)
+        time.sleep(1.0)
 
         if res_league.status_code != 200:
           league_url = f"https://br1.api.riotgames.com/lol/league/v4/entries/by-puuid/{puuid}"
           res_league = requests.get(league_url, headers=headers, timeout=10)
-          time.sleep(0.8)
+          time.sleep(1.0)
 
         if res_league.status_code == 200:
           for l in res_league.json():
@@ -152,7 +150,7 @@ for s in summoners:
         # 2. MAESTRIA
         mast_url = f"https://br1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/{puuid}"
         res_mast = requests.get(mast_url, headers=headers, timeout=10)
-        time.sleep(0.8)
+        time.sleep(1.0)
 
         if res_mast.status_code == 200:
           m_json = res_mast.json()
@@ -177,10 +175,10 @@ for s in summoners:
               "list": m_list,
           }
 
-      # 3. HISTÓRICO DE PARTIDAS
-      matches_url = f"https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count=20"
+      # 3. HISTÓRICO DE PARTIDAS (Limitado a 5 partidas recentes para poupar a API)
+      matches_url = f"https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count=5"
       res_matches = requests.get(matches_url, headers=headers, timeout=10)
-      time.sleep(0.8)
+      time.sleep(1.0)
 
       if res_matches.status_code == 200:
         match_ids = res_matches.json()
@@ -188,7 +186,7 @@ for s in summoners:
         for m_id in match_ids:
           m_url = f"https://americas.api.riotgames.com/lol/match/v5/matches/{m_id}"
           res_m = requests.get(m_url, headers=headers, timeout=10)
-          time.sleep(0.6)
+          time.sleep(0.8)
 
           if res_m.status_code == 200:
             m_data = res_m.json()
@@ -200,7 +198,6 @@ for s in summoners:
             match_year = str(match_dt.year)
 
             q_id = info.get("queueId", 420)
-            # Mapeamento do tipo de fila para o filtro
             if q_id == 420:
               queue_category = "SOLO"
               q_type = "Ranked Solo"
