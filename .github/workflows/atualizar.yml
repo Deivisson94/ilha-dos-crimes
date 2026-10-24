@@ -2,8 +2,8 @@ name: Atualizar Ilha dos Crimes
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
-  workflow_dispatch:
+    - cron: '*/30 * * * *'  # Roda automaticamente a cada 30 minutos
+  workflow_dispatch:      # Permite o botão manual e via API do site
 
 jobs:
   build-and-update:
@@ -32,5 +32,5 @@ jobs:
       - name: Salvar alterações no repositório
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "bot: atualização automática dos dados do painel"
+          commit_message: "bot: atualização automática via painel"
           branch: main
