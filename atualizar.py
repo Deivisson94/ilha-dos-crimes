@@ -21,6 +21,7 @@ summoners = [
     {"id": "7", "name": "ADogC", "tag": "br1"},
     {"id": "8", "name": "DLS ADogC", "tag": "DLS"},
     {"id": "9", "name": "Não é Bambole", "tag": "br1"},
+    {"id": "10", "name": "ThreshHookTorto", "tag": "br1"},
 ]
 
 headers = {"X-Riot-Token": API_KEY}
