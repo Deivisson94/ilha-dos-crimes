@@ -2,7 +2,7 @@ name: Atualizar Ilha dos Crimes
 
 on:
   schedule:
-    - cron: '*/10 * * * *'  # Roda automaticamente a cada 10 minutos
+    - cron: '*/10 * * * *'  # Executa automaticamente a cada 10 minutos
   workflow_dispatch:      # Permite o botão manual e via API do site
 
 jobs:
@@ -29,7 +29,13 @@ jobs:
         run: |
           python atualizar.py
 
-      - name: Salvar alterações no repositório
+      - name: Sincronizar com o repositório remoto
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull origin main --rebase
+
+      - name: Guardar alterações no repositório
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "bot: atualização automática via painel"
