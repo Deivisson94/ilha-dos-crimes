@@ -1,9 +1,10 @@
-import datetime
-import json
 import os
-import re
+import time
+import json
 import urllib.parse
 import requests
+import re
+from datetime import datetime
 
 # Pega a chave do ambiente (GitHub Actions) ou usa a chave local
 API_KEY = os.getenv(
@@ -20,6 +21,7 @@ summoners = [
     {"id": "7", "name": "ADogC", "tag": "br1"},
     {"id": "8", "name": "DLS ADogC", "tag": "DLS"},
     {"id": "9", "name": "Não é Bambole", "tag": "br1"},
+    {"id": "10", "name": "ThreshHookTorto", "tag": "br1"},
 ]
 
 headers = {"X-Riot-Token": API_KEY}
@@ -63,7 +65,7 @@ except Exception:
   champ_id_to_name = {}
 
 print("==================================================")
-print("🧠 ILHA DOS CRIMES - EXTRAÇÃO OTIMIZADA COM LIVE GAME")
+print("🧠 ILHA DOS CRIMES - EXTRAÇÃO OTIMIZADA (SEM RATE LIMIT)")
 print("==================================================\n")
 
 for s in summoners:
@@ -175,7 +177,7 @@ for s in summoners:
               "list": m_list,
           }
 
-      # 3. HISTÓRICO DE PARTIDAS
+      # 3. HISTÓRICO DE PARTIDAS (Limitado a 5 partidas recentes para poupar a API)
       matches_url = f"https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count=5"
       res_matches = requests.get(matches_url, headers=headers, timeout=10)
       time.sleep(1.0)
@@ -194,7 +196,7 @@ for s in summoners:
             creation_time = info.get("gameCreation", 0) / 1000.0
             game_duration = max(info.get("gameDuration", 1), 1)
             duration_min = round(game_duration / 60, 1)
-            match_dt = datetime.datetime.fromtimestamp(creation_time)
+            match_dt = datetime.fromtimestamp(creation_time)
             match_year = str(match_dt.year)
 
             q_id = info.get("queueId", 420)
@@ -358,17 +360,6 @@ for s in summoners:
                       "cs": red_cs,
                   },
               })
-
-      # 4. LIVE GAME (Verifica se está em partida ao vivo)
-      spec_url = f"https://br1.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/{puuid}"
-      res_spec = requests.get(spec_url, headers=headers, timeout=10)
-      time.sleep(0.8)
-
-      if res_spec.status_code == 200:
-        live_game = {"inGame": True, "data": res_spec.json()}
-      else:
-        live_game = {"inGame": False, "data": None}
-
   except Exception as e:
     print(f"  ❌ Erro: {e}")
 
@@ -450,7 +441,7 @@ try:
     f.write(new_html)
 
   print("\n==================================================")
-  print("✅ PAINEL ATUALIZADO COM SUCESSO (COM LIVE GAME)!")
+  print("✅ PAINEL ATUALIZADO COM SUCESSO!")
   print("==================================================")
 except Exception as e:
   print(f"\n❌ Erro ao salvar index.html: {e}")
