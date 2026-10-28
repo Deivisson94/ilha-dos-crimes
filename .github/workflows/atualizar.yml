@@ -2,12 +2,21 @@ name: Atualizar Ilha dos Crimes
 
 on:
   schedule:
-    - cron: '*/10 * * * *'  # Roda automaticamente a cada 10 minutos
-  workflow_dispatch:      # Permite o botão manual e via API do site
+    - cron: '*/15 * * * *'  # A cada 15 minutos (a execução leva ~3 min; evita sobreposição)
+  workflow_dispatch:        # Permite o botão manual e via API do site
+
+permissions:
+  contents: write           # necessário para o bot fazer commit/push
+
+# Nunca roda duas atualizações ao mesmo tempo (principal causa do erro non-fast-forward)
+concurrency:
+  group: atualizar-ilha-dos-crimes
+  cancel-in-progress: false
 
 jobs:
   build-and-update:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Baixar código do repositório
@@ -17,6 +26,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+          cache: 'pip'
 
       - name: Instalar dependências
         run: |
@@ -26,11 +36,28 @@ jobs:
       - name: Executar script de atualização
         env:
           RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
-        run: |
-          python atualizar.py
+        run: python atualizar.py
 
       - name: Salvar alterações no repositório
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "bot: atualização automática via painel"
-          branch: main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteração para salvar."
+            exit 0
+          fi
+
+          git commit -m "bot: atualização automática via painel"
+
+          # Se você subiu algo no GitHub durante a execução, integra suas mudanças
+          # e, em conflito, mantém os dados novos do bot (-X theirs = commit do bot).
+          for tentativa in 1 2 3; do
+            git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0
+            echo "Push falhou (tentativa $tentativa). Tentando novamente..."
+            git rebase --abort 2>/dev/null || true
+            sleep 5
+          done
+          echo "Não foi possível enviar as alterações."
+          exit 1
